@@ -4,7 +4,11 @@ import { Request, Response } from "express";
  
 export const getBlogs = async (req: Request, res: Response) => {
   try {
-    let blogs = await prisma.blog.findMany();
+    let blogs = await prisma.blog.findMany({
+      where: {
+        userId:res.locals.user.id
+      }
+    });
 
     res.send(blogs);
   } catch (err) {
@@ -17,6 +21,7 @@ export const createBlog = async (req: Request, res: Response) => {
     let blogs = await prisma.blog.create({
        data:{
         text:req.body.text,
+        userId: res.locals.user.id
       }
     });
 
@@ -29,9 +34,10 @@ export const createBlog = async (req: Request, res: Response) => {
 export const updateBlog = async (req: Request, res: Response) => {
   const { text } = req.body;
   try {
-    let update = await prisma.blog.update({
+    let update = await prisma.blog.updateMany({
       where: {
-        id: parseInt(req.params.id),
+        id: req.params.id,
+        userId: res.locals.user.id
       },
       data: {
         text,
@@ -46,9 +52,10 @@ export const updateBlog = async (req: Request, res: Response) => {
 export const deleteBlog = async (req: Request, res: Response) => {
   const { id } = req.body;
   try {
-    let del = await prisma.blog.delete({
+    let del = await prisma.blog.deleteMany({
       where: {
-        id: parseInt(id),
+        id: id,
+        userId: res.locals.user.id
       },
     });
     res.json(del);

@@ -7,17 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
-  id       Int    @id @default(autoincrement())
+model User {
+  id       String    @id @default(uuid())
   username String @db.VarChar(255)
-  password String @db.VarChar(255)
-  email    String @unique @db.VarChar(255)
+  password String  
+  email    String @unique  
+  Blog     Blog[]
 }
 
-model blog {
-  id     Int      @id @default(autoincrement())
+model Blog {
+  id     String       @id @default(uuid())
   date   DateTime? @default(now())
-  userId Int?
-  text String @db.VarChar(255)
-  @@index([userId], map: "Blog_userId_fkey")
+  userId String
+  text   String    @db.VarChar(255)
+  user User @relation(fields: [userId],references: [id])
 }
